@@ -1,20 +1,61 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, {useState} from 'react';
+import{Text, SafeAreaView, View, TextInput, TouchableOpacity, FlatList} from 'react-native';
+import{ appStyles as styles  } from "./styles";
 
-export default function App() {
+
+function App(){
+
+  const [text, setText] = useState("");
+  const [tasks, setTasks] = useState(["Learn Html", "Learn CSS", "Learn JavaScript"]);
+  const handleAddTaskPress = () => {
+    setTasks([...tasks, text]);
+    setText("");
+  };
+
+  const handleDeleteTaskPress = (index) => {
+    let newTasks = [...tasks];
+    newTasks.splice(index,1);
+    setTasks(newTasks);
+  };
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+  <SafeAreaView style={{flex:1}}>
+    <View style = {styles.container}>
+    <Text style = {styles.title}>My Tasks ({text})</Text>
+    <Text style = {styles.subtitle}>
+      Enter your tasks in the text box below and press the "Add" button to add.
+    </Text>
+    <TextInput 
+    style={styles.input}
+    placeholder='Enter your task here'
+    value={text}
+    onChangeText={setText}
+    />
+    <TouchableOpacity 
+    style = {styles.buttonContainer}
+    onPress={handleAddTaskPress}>
+
+      <Text style = {styles.buttonText}>Add Task</Text>
+    </TouchableOpacity>
+    <View style={styles.divider}/>
+    <FlatList
+    data={tasks} 
+    renderItem={({item, index}) => 
+    (
+    <View style={styles.taskContainer}>
+      <Text style={styles.taskText}>{item}</Text>
+      <TouchableOpacity style={styles.taskDelete} 
+      onPress={()=> handleDeleteTaskPress(index)}>
+        <Text style={styles.taskDeleteText}>X</Text>
+      </TouchableOpacity>
     </View>
+      )
+  }
+    keyExtractor={(item) => item + Date.now() + Math.random()}
+    />
+    </View>
+  </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
